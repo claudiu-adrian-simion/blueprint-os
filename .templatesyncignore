@@ -1,0 +1,4 @@
+# Files that are permanently specific to this image and should never be
+# overwritten by upstream ublue-os/image-template changes.
+cosign.pub
+image-template.env

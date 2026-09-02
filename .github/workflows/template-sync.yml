@@ -1,0 +1,31 @@
+---
+name: Sync upstream template
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # every hour — TODO: dial back to weekly after testing
+  workflow_dispatch:
+
+jobs:
+  sync:
+    name: Open PR with upstream template changes
+    runs-on: ubuntu-24.04
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      # These stage versions are pinned by https://github.com/renovatebot/renovate
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Sync template
+        uses: AndreasAugustin/actions-template-sync@8a0f668b83c32a0f673353086d74f12b8853d4f5 # v2.5.3
+        with:
+          source_repo_path: ublue-os/image-template
+          upstream_branch: main
+          pr_title: "chore: sync changes from upstream template"
+          pr_commit_msg: "chore(template): merge upstream template changes"
+          pr_branch_name_prefix: "chore/template-sync"
+          pr_labels: template-sync,automated
