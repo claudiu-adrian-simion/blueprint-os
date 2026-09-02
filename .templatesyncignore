@@ -2,7 +2,4 @@
 # overwritten by upstream ublue-os/image-template changes.
 cosign.pub
 image-template.env
-
-# Default GITHUB_TOKEN can't push changes to workflow files; merge upstream
-# CI changes here by hand occasionally instead of via this job.
-.github/workflows/
+Containerfile

@@ -3,7 +3,7 @@ name: Sync upstream template
 
 on:
   schedule:
-    - cron: '0 * * * *'  # every hour — TODO: dial back to weekly after testing
+    - cron: '0 6 * * 1'  # 6am UTC every Monday
   workflow_dispatch:
 
 jobs:
