@@ -31,6 +31,7 @@ dnf5 -y copr disable bieszczaders/kernel-cachyos
 
 ### Install CachyOS kernel addons
 dnf5 -y copr enable bieszczaders/kernel-cachyos-addons
+dnf5 -y swap zram-generator-defaults cachyos-settings
 dnf5 -y install cachyos-settings scx-scheds
 dnf5 -y copr disable bieszczaders/kernel-cachyos-addons
 
