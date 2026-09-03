@@ -5,35 +5,39 @@ set -ouex pipefail
 # Copy the contents of system_files/ of the git repo to /
 cp -avf "/ctx/system_files"/. /
 
-### Install packages
-
-# Packages can be installed from any enabled yum repo on the image.
-# RPMfusion repos are available by default in ublue main images
-# List of rpmfusion packages can be found here:
-# https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/43/x86_64/repoview/index.html&protocol=https&redirect=1
-
 # this installs a package from fedora repos
 dnf5 install -y just
 
-# Use a COPR Example:
-#
-# dnf5 -y copr enable ublue-os/staging
-# dnf5 -y install package
-# Disable COPRs so they don't end up enabled on the final image:
-# dnf5 -y copr disable ublue-os/staging
+# Swap to the CachyOS kernel
+# https://github.com/ublue-os/bazzite/blob/main/build_files/install-kernel-akmods
 
-### Swap to the CachyOS kernel
-setsebool -P domain_kernel_load_modules on
+## Remove stock kernel and cleanup
+pushd /usr/lib/kernel/install.d
+mv 05-rpmostree.install 05-rpmostree.install.bak
+mv 50-dracut.install 50-dracut.install.bak
+printf '%s\n' '#!/bin/sh' 'exit 0' > 05-rpmostree.install
+printf '%s\n' '#!/bin/sh' 'exit 0' > 50-dracut.install
+chmod +x 05-rpmostree.install 50-dracut.install
+popd
 
-curl -Lo /etc/yum.repos.d/bieszczaders-kernel-cachyos-fedora-$(rpm -E %fedora).repo \
-    https://copr.fedorainfracloud.org/coprs/bieszczaders/kernel-cachyos/repo/fedora-$(rpm -E %fedora)/bieszczaders-kernel-cachyos-fedora-$(rpm -E %fedora).repo
+for pkg in kernel kernel{-core,-modules,-modules-core,-modules-extra,-tools-libs,-tools}; do
+    rpm --erase "${pkg}" --nodeps
+done
 
-curl -Lo /etc/yum.repos.d/bieszczaders-kernel-cachyos-addons-fedora-$(rpm -E %fedora).repo \
-    https://copr.fedorainfracloud.org/coprs/bieszczaders/kernel-cachyos-addons/repo/fedora-$(rpm -E %fedora)/bieszczaders-kernel-cachyos-addons-fedora-$(rpm -E %fedora).repo
+### Install CachyOS kernel
+dnf5 -y copr enable bieszczaders/kernel-cachyos
+dnf5 -y install kernel-cachyos kernel-cachyos-devel-matched
+dnf5 -y copr disable bieszczaders/kernel-cachyos
 
-rpm-ostree override remove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra \
-    --install kernel-cachyos --install scx-scheds --install scx-tools
+### Install CachyOS kernel addons
+dnf5 -y copr enable bieszczaders/kernel-cachyos-addons
+dnf5 -y install cachyos-settings scx-scheds
+dnf5 -y copr disable bieszczaders/kernel-cachyos-addons
 
-#### Example for enabling a System Unit File
+pushd /usr/lib/kernel/install.d
+mv -f 05-rpmostree.install.bak 05-rpmostree.install
+mv -f 50-dracut.install.bak 50-dracut.install
+popd
 
+dnf5 clean all
 systemctl enable podman.socket
