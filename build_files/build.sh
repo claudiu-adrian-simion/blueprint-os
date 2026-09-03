@@ -5,7 +5,7 @@ set -ouex pipefail
 cp -avf "/ctx/system_files"/. /
 
 # this installs a package from fedora repos
-dnf5 install -y just cryptsetup
+dnf5 install -y just cryptsetup tpm2-tss
 
 ### Swap to the CachyOS kernel ###
 # https://github.com/ublue-os/bazzite/blob/main/build_files/install-kernel-akmods
@@ -44,7 +44,7 @@ else
     dracut_bin=dracut
 fi
 
-"$dracut_bin" --no-hostonly --kver "$kver" --reproducible -v --add "ostree crypt" \
+"$dracut_bin" --no-hostonly --kver "$kver" --reproducible -v --add "ostree crypt tpm2-tss" \
     -f "/usr/lib/modules/$kver/initramfs.img"
 
 ### Install CachyOS kernel addons
