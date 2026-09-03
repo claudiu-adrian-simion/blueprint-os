@@ -23,12 +23,13 @@ dnf5 install -y just
 # dnf5 -y copr disable ublue-os/staging
 
 ### Swap to the CachyOS kernel
+setsebool -P domain_kernel_load_modules on
 
 curl -Lo /etc/yum.repos.d/bieszczaders-kernel-cachyos-fedora-$(rpm -E %fedora).repo \
     https://copr.fedorainfracloud.org/coprs/bieszczaders/kernel-cachyos/repo/fedora-$(rpm -E %fedora)/bieszczaders-kernel-cachyos-fedora-$(rpm -E %fedora).repo
 
 rpm-ostree override remove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra \
-    --install kernel-cachyos
+    --install kernel-cachyos scx-scheds scx-tools
 
 #### Example for enabling a System Unit File
 
