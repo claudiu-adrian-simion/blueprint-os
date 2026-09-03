@@ -1,0 +1,8 @@
+[private]
+default:
+    @just --list
+
+# Enable automatic LUKS unlock via TPM
+setup-luks-tpm-unlock:
+    #!/usr/bin/bash
+    sudo /usr/libexec/luks-enable-tpm2-autounlock

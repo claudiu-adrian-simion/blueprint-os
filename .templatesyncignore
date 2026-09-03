@@ -3,3 +3,4 @@
 cosign.pub
 image-template.env
 Containerfile
+build_files/build.sh
