@@ -29,3 +29,4 @@ jobs:
           pr_commit_msg: "chore(template): merge upstream template changes"
           pr_branch_name_prefix: "chore/template-sync"
           pr_labels: template-sync,automated
+          target_gh_token: ${{ secrets.TEMPLATE_SYNC_PAT }}
