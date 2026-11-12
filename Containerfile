@@ -25,7 +25,7 @@ FROM quay.io/fedora/fedora-minimal:latest
 ## by the package manager.
 
 # RUN rm /opt && mkdir /opt
-RUN dnf install bootc
+RUN dnf install bootc -y --setopt=install_weak_deps=False
 
 ### MODIFICATIONS
 ## make modifications desired in your image and install packages by modifying the build.sh script
