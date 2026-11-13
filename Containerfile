@@ -5,8 +5,12 @@ FROM quay.io/bootc-devel/fedora-bootc-45-minimal:latest
 
 # Packages
 ## Basic system usability
+RUN dnf5 install sudo -y --setopt=install_weak_deps=False
 RUN dnf5 install rpm-ostree -y --setopt=install_weak_deps=False
+RUN dnf5 install shadow-utils -y --setopt=install_weak_deps=False
 RUN dnf5 install clear -y --setopt=install_weak_deps=False
+
+RUN dnf5 install clevis-dracut -y --setopt=install_weak_deps=False
 
 ## Networking
 RUN dnf5 install NetworkManager -y --setopt=install_weak_deps=False
