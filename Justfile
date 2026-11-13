@@ -126,6 +126,19 @@ build $target_image=image_name $tag=default_tag:
 
     podman build "${PODMAN_BUILD_ARGS[@]}" .
 
+# List package names in the image (no versions, usable with dnf install) and export them to a file (default: packages-<image_name>.txt)
+[group('Build')]
+packages $target_image=image_name $tag=default_tag $output=("packages-" + image_name + ".txt"): (build target_image tag)
+    #!/usr/bin/env bash
+    set -euo pipefail
+    podman run --rm "localhost/${target_image}:${tag}" rpm -qa --qf '%{NAME}\n' | grep -v '^gpg-pubkey$' | sort -u | tee "${output}"
+    echo "Total: $(wc -l < "${output}") packages (exported to ${output})"
+
+# Build the image and drop into an interactive shell inside a throwaway container of it
+[group('Build')]
+shell $target_image=image_name $tag=default_tag: (build target_image tag)
+    podman run --rm -it "localhost/${target_image}:${tag}" /bin/bash
+
 # Split the image for smaller updates (New)!
 rechunk $target_image=image_name $tag=default_tag:
     #!/usr/bin/env bash
