@@ -109,7 +109,7 @@ RUN dnf5 install chrony -y --setopt=install_weak_deps=False
 RUN dnf5 install bluez -y --setopt=install_weak_deps=False
 
 # Intel bluetooth firmware: only for Intel Bluetooth chips (other vendors ship it with their Wi-Fi package)
-RUN dnf5 install iwlbluetooth-firmware -y --setopt=install_weak_deps=False
+# RUN dnf5 install iwlbluetooth-firmware -y --setopt=install_weak_deps=False
 
 #---------------------------------------------------------------------
 # CPU and GPU
@@ -175,7 +175,7 @@ RUN dnf5 install pipewire -y --setopt=install_weak_deps=False
 RUN dnf5 install wireplumber -y --setopt=install_weak_deps=False
 RUN dnf5 install pipewire-pulseaudio -y --setopt=install_weak_deps=False
 
-# Routes apps that talk to ALSA directly through PipeWire
+# Routes apps that talk to ALSA directly thlatestrough PipeWire
 RUN dnf5 install pipewire-alsa -y --setopt=install_weak_deps=False
 # Per-device profiles so speakers, headphones and microphones work correctly: most laptops
 RUN dnf5 install alsa-ucm -y --setopt=install_weak_deps=False
@@ -258,6 +258,20 @@ RUN dnf5 install bolt -y --setopt=install_weak_deps=False
 # RUN dnf5 install iio-sensor-proxy -y --setopt=install_weak_deps=False
 # Switch between two GPUs: only machines with integrated plus dedicated GPU
 # RUN dnf5 install switcheroo-control -y --setopt=install_weak_deps=False
+
+#---------------------------------------------------------------------
+# Homebrew (ublue-brew, from the ublue-os COPR)
+#---------------------------------------------------------------------
+# Copy Homebrew files from the brew image
+# And enable
+COPY --from=ghcr.io/ublue-os/brew:latest /system_files /
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
+    /usr/bin/systemctl preset brew-setup.service && \
+    /usr/bin/systemctl preset brew-update.timer && \
+    /usr/bin/systemctl preset brew-upgrade.timer
+
 
 ### SYSTEM FILES
 ## Copy the contents of system_files/ to /
