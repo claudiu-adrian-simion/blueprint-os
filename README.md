@@ -1,4 +1,4 @@
-# image-template
+# blueprint-os
 
 This repository is meant to be a template for building your own custom [bootc](https://github.com/bootc-dev/bootc) image. This template is the recommended way to make customizations to any image published by the Universal Blue Project.
 
@@ -140,11 +140,11 @@ Check [akmods hardware support](https://github.com/ublue-os/akmods#nvidia-hardwa
 
 ### Step 2c: Changing Names
 
-Change the `IMAGE_NAME` and `REPO_ORGANIZATION` variable inside the `image-template.env`
+Change the `IMAGE_NAME` and `REPO_ORGANIZATION` variable inside the `blueprint-os.env`
 
 To commit and push all the files changed and added in step 2 into your Github repository:
 ```bash
-git add Containerfile image-template.env cosign.pub
+git add Containerfile blueprint-os.env cosign.pub
 git commit -m "Initial Setup"
 git push
 ```
@@ -223,9 +223,9 @@ Linting:
 
 ## Environment Variables
 
-These are all sourced from the `image-template.env` file.
+These are all sourced from the `blueprint-os.env` file.
 
-- `image_name`: The name of the image (default: "image-template").
+- `image_name`: The name of the image (default: "blueprint-os").
 - `default_tag`: The default tag for the image (default: "latest").
 - `bib_image`: The Bootc Image Builder (BIB) image (default: "quay.io/centos-bootc/bootc-image-builder:latest").
 
