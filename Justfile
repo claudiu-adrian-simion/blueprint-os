@@ -338,6 +338,10 @@ _build-bib $target_image $tag $type $config: (_rootful_load_image target_image t
       "${target_image}:${tag}"
 
     mkdir -p output
+    # mv cannot overwrite a non-empty directory, so remove the previous build of each artifact first
+    for artifact in "$BUILDTMP"/*; do
+        sudo rm -rf "output/$(basename "$artifact")"
+    done
     sudo mv -f $BUILDTMP/* output/
     sudo rmdir $BUILDTMP
     sudo chown -R $USER:$USER output/
