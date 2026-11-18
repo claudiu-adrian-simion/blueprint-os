@@ -56,6 +56,7 @@ RUN dnf5 install ntfs-3g -y --setopt=install_weak_deps=False
 
 # Compressed swap in RAM: recommended on any desktop, since Fedora has no disk swap by default.
 RUN dnf5 install zram-generator -y --setopt=install_weak_deps=False
+RUN dnf5 install zram-generator-defaults -y --setopt=install_weak_deps=False
 
 
 #---------------------------------------------------------------------
