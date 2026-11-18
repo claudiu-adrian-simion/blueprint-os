@@ -266,27 +266,14 @@ RUN dnf5 install bolt -y --setopt=install_weak_deps=False
 #---------------------------------------------------------------------
 # Homebrew (from the official ublue-os brew image)
 #---------------------------------------------------------------------
+# tar is required by Homebrew itself: brew-setup.service unpacks the bundled Homebrew with it, and brew
+# unpacks every package it installs (bottles are tar archives) with it. The minimal base has no tar.
+RUN dnf5 install tar -y --setopt=install_weak_deps=False
+
 # Copy Homebrew files from the brew image
 # And enable
 COPY --from=ghcr.io/ublue-os/brew:latest /system_files /
 
-# The official brew-setup.service runs tar at boot to unpack /usr/share/homebrew.tar.zst, but the minimal
-# base has no tar. Instead, tar is installed only for this step: Homebrew is unpacked now into
-# /usr/share/homebrew, the tarball is dropped, brew-setup.service is patched to copy the unpacked files
-# instead of extracting them (so tar is not needed at boot), and tar is removed again.
-RUN dnf5 install tar -y --setopt=install_weak_deps=False && \
-    mkdir -p /usr/share/homebrew && \
-    tar --zstd -xf /usr/share/homebrew.tar.zst -C /usr/share/homebrew && \
-    rm -f /usr/share/homebrew.tar.zst && \
-    sed -i \
-        -e 's|^ConditionPathExists=/usr/share/homebrew.tar.zst$|ConditionPathExists=/usr/share/homebrew/home/linuxbrew/.linuxbrew|' \
-        -e 's|/tmp/homebrew/home/linuxbrew|/usr/share/homebrew/home/linuxbrew|' \
-        -e '/^ExecStart=.*--zstd/d' \
-        -e '/^ExecStart=.*mkdir -p \/tmp\/homebrew$/d' \
-        -e '/^ExecStart=.*rm -rf \/tmp\/homebrew$/d' \
-        /usr/lib/systemd/system/brew-setup.service && \
-    ! grep -qE 'tar |/tmp/homebrew' /usr/lib/systemd/system/brew-setup.service && \
-    dnf5 remove tar -y
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
